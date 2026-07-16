@@ -1,7 +1,7 @@
 <launch>
     <arg name="world"
         default="$(find car)/world/package.xml"/>
-    <arg name="gui" default="true"/>
+    <arg name="gui" default="false"/>
     <arg name="model"
         default="$(find yahboomcar_description)/urdf/yahboomcar_R2.urdf.xacro"/>
     
@@ -82,6 +82,120 @@
         name="rqt_robot_steering"
         output="screen"
         />
+
+    <node
+        pkg="car"
+        type="ackermann_odom.py"
+        name="ackermann_odom"
+        output="screen"
+        >
+
+        <param name="wheel_radius" value="0.0325"/>
+
+        <!-- 修改成你的前後輪軸距 -->
+        <param name="wheelbase" value="0.23529"/>
+
+        <param
+            name="rear_left_joint"
+            value="back_left_joint"
+        />
+
+        <param
+            name="rear_right_joint"
+            value="back_right_joint"
+        />
+
+        <param
+            name="front_left_steer_joint"
+            value="front_left_steer_joint"
+        />
+
+        <param
+            name="front_right_steer_joint"
+            value="front_right_steer_joint"
+        />
+
+        <param name="odom_frame" value="odom"/>
+        <param name="base_frame" value="base_link"/>
+        <param name="publish_tf" value="true"/>
+        <param name="publish_rate" value="50.0"/>
+        </node>
+
+
+    <!-- GMapping -->
+    <node pkg="gmapping"
+          type="slam_gmapping"
+          name="slam_gmapping"
+          output="screen">
+
+        <!-- Topic -->
+        <remap from="scan" to="scan"/>
+
+        <!-- TF -->
+        <param name="map_frame" value="map"/>
+        <param name="odom_frame" value="odom"/>
+        <param name="base_frame" value="base_link"/>
+
+        <!-- 地圖更新頻率 -->
+        <param name="map_update_interval" value="2.0"/>
+
+        <!-- 雷達有效距離，需小於雷達 max range -->
+        <param name="maxUrange" value="11.5"/>
+        <param name="maxRange" value="12.0"/>
+
+        <!-- TF 容忍時間 -->
+        <param name="transform_publish_period" value="0.05"/>
+        <param name="tf_delay" value="0.1"/>
+
+        <!-- 移動多少才更新掃描 -->
+        <param name="linearUpdate" value="0.10"/>
+        <param name="angularUpdate" value="0.05"/>
+        <param name="temporalUpdate" value="0.5"/>
+
+        <!-- 粒子數 -->
+        <param name="particles" value="50"/>
+
+        <!-- 掃描匹配參數 -->
+        <param name="minimumScore" value="50"/>
+        <param name="lskip" value="0"/>
+
+        <!-- 地圖範圍 -->
+        <param name="xmin" value="-20.0"/>
+        <param name="ymin" value="-20.0"/>
+        <param name="xmax" value="20.0"/>
+        <param name="ymax" value="20.0"/>
+
+        <!-- 地圖解析度，單位 m/cell -->
+        <param name="delta" value="0.05"/>
+
+        <!-- GMapping 常用參數 -->
+        <param name="sigma" value="0.05"/>
+        <param name="kernelSize" value="1"/>
+        <param name="lstep" value="0.05"/>
+        <param name="astep" value="0.05"/>
+        <param name="iterations" value="5"/>
+
+        <param name="lsigma" value="0.075"/>
+        <param name="ogain" value="3.0"/>
+        <param name="lskip" value="0"/>
+
+        <param name="srr" value="0.1"/>
+        <param name="srt" value="0.2"/>
+        <param name="str" value="0.1"/>
+        <param name="stt" value="0.2"/>
+
+        <param name="linearThreshold" value="0.05"/>
+        <param name="angularThreshold" value="0.05"/>
+        <param name="resampleThreshold" value="0.5"/>
+
+        <param name="llsamplerange" value="0.01"/>
+        <param name="llsamplestep" value="0.01"/>
+        <param name="lasamplerange" value="0.005"/>
+        <param name="lasamplestep" value="0.005"/>
+
+    </node>
+
+
 
     <node 
         pkg="rviz"
