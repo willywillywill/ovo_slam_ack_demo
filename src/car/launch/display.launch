@@ -1,0 +1,36 @@
+<launch>
+    <arg name="world"
+        default="$(find car)/world/package.xml"/>
+
+    <arg name="gui" default="false"/>
+    
+    <param name="robot_description" command="$(find xacro)/xacro --inorder
+        '$(find yahboomcar_description)/urdf/yahboomcar_R2.urdf.xacro'"/>
+
+    
+    <node name="tf_footprint_base" pkg="tf" type="static_transform_publisher"
+          args="0 0 0 0 0 0 base_link base_footprint 40"/>
+
+    <node 
+        name="spawn_model" 
+        pkg="gazebo_ros" 
+        type="spawn_model"
+        args="-file $(find yahboomcar_description)/urdf/yahboomcar_R2.urdf.xacro -urdf -model yahboomcar" 
+        output="screen"
+        />
+
+    <node 
+        name="robot_state_publisher" 
+        pkg="robot_state_publisher" 
+        type="robot_state_publisher"
+        />
+    
+    <node 
+        name="rviz" 
+        pkg="rviz" 
+        type="rviz" 
+        args="-d $(find yahboomcar_description)/rviz/yahboomcar.rviz"
+        />
+
+</launch>
+

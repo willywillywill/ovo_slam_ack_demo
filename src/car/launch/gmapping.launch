@@ -1,0 +1,93 @@
+<launch>
+    <arg name="world"
+        default="$(find car)/world/package.xml"/>
+    <arg name="gui" default="true"/>
+    <arg name="model"
+        default="$(find yahboomcar_description)/urdf/yahboomcar_R2.urdf.xacro"/>
+    
+    <!-- 載入 URDF -->
+    <param name="robot_description"
+        textfile="$(arg model)"/>
+
+    <!-- 載入控制器設定 -->
+    <rosparam
+        file="$(find car)/config/controllers.yaml"
+        command="load"/>
+
+    <!-- 生成模型 -->
+    <node 
+        name="spawn_model" 
+        pkg="gazebo_ros" 
+        type="spawn_model"
+        output="screen"
+        args="  -file $(arg model)
+                -urdf 
+                -model yahboomcar
+                -x 0
+                -y 0
+                -z 0.10" 
+        />
+
+
+    <!-- 生成 Gazebo 模型 -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="world_name" value="$(arg world)"/>
+        <arg name="use_sim_time" value="true"/>
+    </include>
+    
+
+    <!-- 發布 TF -->
+    <node
+        pkg="robot_state_publisher"
+        type="robot_state_publisher"
+        name="robot_state_publisher"
+        output="screen"
+        />
+
+    <node
+        pkg="controller_manager"
+        type="spawner"
+        name="controller_spawner"
+        output="screen"
+        args="
+        joint_state_controller
+        front_left_steer_controller
+        front_right_steer_controller
+        back_left_wheel_controller
+        back_right_wheel_controller"/>
+
+    <!-- cmd_vel 轉阿克曼關節命令 -->
+  <node
+        pkg="car"
+        type="ackermann_controller.py"
+        name="ackermann_controller"
+        output="screen">
+
+        <param name="wheelbase" value="0.23529"/>
+        <param name="front_track" value="0.13"/>
+        <param name="rear_track" value="0.1685"/>
+
+        <!-- 需要依實際輪子大小調整 -->
+        <param name="wheel_radius" value="0.0325"/>
+
+        <param name="max_steering" value="0.6"/>
+        <param name="max_wheel_speed" value="30.0"/>
+    </node>
+
+    <!-- command GUI -->
+    <node 
+        pkg="rqt_robot_steering"
+        type="rqt_robot_steering"
+        name="rqt_robot_steering"
+        output="screen"
+        />
+
+    <node 
+        pkg="rviz"
+        name="rviz"
+        type="rviz"
+        />
+
+
+</launch>
