@@ -423,6 +423,18 @@
     <axis
       xyz="0 0 0" />
   </joint>
+
+  <link name="camera_depth_optical_frame"/>
+  <joint name="camera_depth_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_depth_optical_frame"/>
+
+    <!-- ROS optical frame：z 向前、x 向右、y 向下 -->
+    <origin
+      xyz="0 0 0"
+      rpy="-1.57079632679 0 -1.57079632679"/>
+  </joint>
+
   <link
     name="laser_link">
     <inertial>
@@ -543,16 +555,13 @@
   </gazebo>
   
   <gazebo reference="camera_link">
-    <sensor name="front_camera_sensor" type="camera">
-      <pose>0 0 0 0 0 0</pose>
-
+    <sensor name="rgbd_camera" type="depth">
       <always_on>true</always_on>
+      <update_rate>15</update_rate>
       <visualize>true</visualize>
-      <update_rate>30</update_rate>
 
-      <camera name="front_camera">
-        <!-- 約 60 度水平視野 -->
-        <horizontal_fov>1.0472</horizontal_fov>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
 
         <image>
           <width>640</width>
@@ -561,38 +570,44 @@
         </image>
 
         <clip>
-          <near>0.05</near>
-          <far>50.0</far>
+          <near>0.10</near>
+          <far>8.0</far>
         </clip>
-
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.003</stddev>
-        </noise>
       </camera>
 
       <plugin
-        name="front_camera_controller"
-        filename="libgazebo_ros_camera.so">
+        name="rgbd_camera_plugin"
+        filename="libgazebo_ros_openni_kinect.so">
 
-        <robotNamespace>/</robotNamespace>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>15.0</updateRate>
 
-        <!-- 最終 Topic 為 /camera/image_raw -->
         <cameraName>camera</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
 
-        <frameName>camera_optical_link</frameName>
+        <imageTopicName>color/image_raw</imageTopicName>
 
-        <!-- 由上方 sensor 的 update_rate 控制 FPS -->
-        <updateRate>0.0</updateRate>
+        <cameraInfoTopicName>
+          color/camera_info
+        </cameraInfoTopicName>
 
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
+        <depthImageTopicName>
+          depth/image_raw
+        </depthImageTopicName>
+
+        <depthImageCameraInfoTopicName>
+          depth/camera_info
+        </depthImageCameraInfoTopicName>
+
+        <pointCloudTopicName>
+          depth/points
+        </pointCloudTopicName>
+
+        <frameName>
+          camera_depth_optical_frame
+        </frameName>
+
+        <pointCloudCutoff>0.10</pointCloudCutoff>
+        <pointCloudCutoffMax>8.0</pointCloudCutoffMax>
       </plugin>
     </sensor>
   </gazebo>

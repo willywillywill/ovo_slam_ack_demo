@@ -119,7 +119,7 @@
         <param name="base_frame" value="base_link"/>
         <param name="publish_tf" value="true"/>
         <param name="publish_rate" value="50.0"/>
-        </node>
+    </node>
 
 
     <!-- GMapping -->
