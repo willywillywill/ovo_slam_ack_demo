@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- TF frame -->
+  <arg name="map_frame" default="map"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_link"/>
+
+  <!-- Sensor topics -->
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_topic" default="/odom"/>
+
+  <!-- Ackermann vehicle parameters -->
+  <arg name="wheelbase" default="0.35"/>
+  <arg name="max_steering_angle" default="0.60"/>
+
+  <!-- move_base -->
+  <node pkg="move_base"
+        type="move_base"
+        name="move_base"
+        output="screen"
+        clear_params="true">
+
+    <rosparam file="$(find my_car_navigation)/config/costmap_common.yaml"
+              command="load"
+              ns="global_costmap"/>
+
+    <rosparam file="$(find my_car_navigation)/config/costmap_common.yaml"
+              command="load"
+              ns="local_costmap"/>
+
+    <rosparam file="$(find my_car_navigation)/config/global_costmap.yaml"
+              command="load"/>
+
+    <rosparam file="$(find my_car_navigation)/config/local_costmap.yaml"
+              command="load"/>
+
+    <rosparam file="$(find my_car_navigation)/config/dwa_local_planner.yaml"
+              command="load"/>
+
+    <!-- move_base basic settings -->
+    <param name="base_global_planner"
+           value="navfn/NavfnROS"/>
+
+    <param name="base_local_planner"
+           value="dwa_local_planner/DWAPlannerROS"/>
+
+    <param name="planner_frequency" value="1.0"/>
+    <param name="controller_frequency" value="10.0"/>
+
+    <param name="planner_patience" value="5.0"/>
+    <param name="controller_patience" value="5.0"/>
+
+    <!-- Ackermann cannot rotate in place -->
+    <param name="recovery_behavior_enabled" value="false"/>
+    <param name="clearing_rotation_allowed" value="false"/>
+
+    <param name="oscillation_timeout" value="10.0"/>
+    <param name="oscillation_distance" value="0.2"/>
+
+    <remap from="odom" to="$(arg odom_topic)"/>
+  </node>
+
+  <!-- Convert Twist into Ackermann command -->
+  <node pkg="my_car_navigation"
+        type="cmd_vel_to_ackermann.py"
+        name="cmd_vel_to_ackermann"
+        output="screen">
+
+    <param name="wheelbase" value="$(arg wheelbase)"/>
+    <param name="max_steering_angle"
+           value="$(arg max_steering_angle)"/>
+
+    <param name="minimum_speed" value="0.05"/>
+
+    <remap from="cmd_vel" to="/cmd_vel"/>
+    <remap from="ackermann_cmd" to="/ackermann_cmd"/>
+  </node>
+</launch>
