@@ -3,7 +3,7 @@
         default="$(find car)/world/package.xml"/>
     <arg name="gui" default="false"/>
     <arg name="model"
-        default="$(find yahboomcar_description)/urdf/yahboomcar_R2.urdf.xacro"/>
+        default="$(find car)/urdf/my_car.urdf.xacro"/>
     
     <!-- 載入 URDF -->
     <param name="robot_description"
@@ -121,11 +121,11 @@
         <param name="publish_rate" value="50.0"/>
     </node>
 
-
     <node 
         pkg="rviz"
         name="rviz"
         type="rviz"
+        args="-d $(find car)/rviz/car1.rviz"
         />
 
 </launch>

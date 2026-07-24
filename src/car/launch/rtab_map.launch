@@ -13,7 +13,7 @@
        default="/camera/depth/image_raw"/>
 
   <arg name="camera_info_topic"
-       default="/camera/camera_info"/>
+       default="/camera/color/camera_info"/>
 
   <arg name="scan_topic"
        default="/scan"/>
@@ -97,6 +97,9 @@
       <!-- 使用視覺＋ICP -->
       <param name="Reg/Strategy"
              value="1"/>
+
+       <param name="Grid/Sensor" type="string" value="0"/>
+       <param name="Reg/Force3DoF" type="string" value="true"/>
 
       <!-- 新節點建立條件 -->
       <param name="RGBD/LinearUpdate"

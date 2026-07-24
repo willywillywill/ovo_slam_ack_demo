@@ -25,7 +25,14 @@ RUN apt install ros-noetic-teleop-twist-keyboard
 RUN apt install ros-noetic-navigation -y
 RUN apt install ros-noetic-hector-mapping
 RUN apt install ros-noetic-rqt-tf-tree -y
-
+RUN apt install ros-noetic-rtabmap \
+                ros-noetic-rtabmap-ros \
+                ros-noetic-rtabmap-slam -y
+RUN apt install -y \
+  ros-noetic-ros-controllers \
+  ros-noetic-velocity-controllers \
+  ros-noetic-effort-controllers \
+  ros-noetic-joint-state-controller
 
 # Switch from root to user
 USER $USERNAME

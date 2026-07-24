@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
-    container_name: ros_noetic_ovo
+    container_name: ros_noetic_rtab_map
 
     devices:
       - /dev:/dev

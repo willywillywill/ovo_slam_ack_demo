@@ -1,14 +1,4 @@
-gazebo_ros_control:
-  pid_gains:
-    front_right_steer_joint:
-      p: 0.2
-      i: 0.0
-      d: 0.01
 
-    front_left_steer_joint:
-      p: 0.2
-      i: 0.0
-      d: 0.01
 
 joint_state_controller:
   type: joint_state_controller/JointStateController
